@@ -30,7 +30,24 @@ export class AuthService {
     }
     const payload = { email: body.email };
     return {
-      access_token: await this.jwtService.signAsync(payload),
+      access_token: await this.jwtService.signAsync(payload, {
+        secret: process.env.JWT_TOKEN_SECRET,
+      }),
+      refresh_token: await this.jwtService.signAsync(payload, {
+        secret: process.env.JWT_REFRESH_TOKEN_SECRET,
+        expiresIn: '7d',
+      }),
+    };
+  }
+  async refreshToken(user) {
+    const payload = {
+      email: user.email,
+    };
+
+    return {
+      access_token: await this.jwtService.sign(payload, {
+        secret: process.env.JWT_TOKEN_SECRET,
+      }),
     };
   }
 }
